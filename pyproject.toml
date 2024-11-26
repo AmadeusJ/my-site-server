@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "my-site-server"
+version = "0.1.0"
+description = ""
+authors = ["AmadeusJ <dawoonjung1026@gmail.com>"]
+readme = "README.md"
+packages = [{include = "my_site_server"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.5"
+sqlalchemy = "^2.0.36"
+uvicorn = "^0.32.1"
+aiomysql = "^0.2.0"
+telegram = "^0.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
