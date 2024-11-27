@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.models import Base
 from app.database import engine
-from app.routers import portfolio
+from app.routers import portfolio, websocket
 from app.logger import logger
 
 
@@ -23,6 +24,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(portfolio.router, prefix="/api", tags=["portfolio"])
+app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 
 logger.info("API Server started successfully.")

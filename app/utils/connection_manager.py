@@ -12,7 +12,7 @@ class ConnectionManager:
         """
         await websocket.accept()
         self.user_connections[user_id] = websocket
-        logger.info(f"WebSocket connection accepted: {websocket}")
+        logger.info(f"WebSocket connection accepted: {user_id}")
 
     async def disconnect(self, user_id: str):
         """

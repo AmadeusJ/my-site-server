@@ -1,10 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, WebSocket
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
-from app.crud import create_chat_message
 from app.schemas import ProjectList, ProjectDetail, ChatMessageCreate
-from app.mailer import send_email
 from app.logger import logger
 from app.utils.connection_manager import ConnectionManager
 import os
@@ -55,26 +53,6 @@ async def get_project(project_id: int, db: AsyncSession = Depends(get_db)):
     return ProjectDetail(project=project)
 
 
-@router.websocket("/ws/messages/")
-async def websocket_endpoint(websocket: WebSocket, user_id: str):
-    """
-    WebSocket Endpoint for real-time communication.
-    """
-    await manager.connect(websocket, user_id)
-    logger.info("WebSocket connection accepted")
-    try:
-        while True:
-            # 클라이언트로부터 메시지 수신
-            data = await websocket.receive_text()
-            logger.info(f"Received message: {data}")
-
-            # 메시지 처리 로직 (예: DB 저장, 텔레그램 전송 등)
-            await manager.send_message_to_user(user_id, f"Message text was: {data}")
-    except Exception as e:
-        logger.error(f"WebSocket error: {e}")
-    finally:
-        await manager.disconnect(user_id)
-        logger.info("WebSocket connection closed")
 
 
 # @router.post("/send_email")
