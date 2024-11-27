@@ -4,6 +4,7 @@ from app.logger import logger
 
 router = APIRouter()
 
+# 웹소켓 연결 관리자 인스턴스 생성
 manager = ConnectionManager()
 
 

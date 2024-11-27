@@ -10,7 +10,6 @@ class Statistic(Base):
   __tablename__ = "statistic_tb"
 
   id = Column(Integer, primary_key=True, index=True)
-  name = Column(String, nullable=False)
   yesterday_count = Column(Integer, nullable=False, default=0)
   today_count = Column(Integer, nullable=False, default=0)
   total_count = Column(Integer, nullable=False, default=0)

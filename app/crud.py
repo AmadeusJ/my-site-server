@@ -8,6 +8,7 @@ async def get_statistic(db: AsyncSession):
     statistic = await db.execute(select(Statistic))
     return statistic.scalars().all()
 
+
 async def get_projects(db: AsyncSession, category: str):
     if category.lower() == 'all':
         projects = await db.execute(select(Project))

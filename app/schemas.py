@@ -1,15 +1,15 @@
 # pydantic 스키마 정의
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
 
 class Statistic(BaseModel):
   """방문자 통계"""
   id: int
-  name: str
   yesterday_count: int
   today_count: int
   total_count: int
+  last_updated_at: datetime
 
   class Config:
     orm_mode = True

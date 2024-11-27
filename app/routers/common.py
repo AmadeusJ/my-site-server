@@ -4,13 +4,9 @@ from app.database import get_db
 from app.crud import get_statistic
 from app.schemas import Statistic
 from app.logger import logger
-from app.utils.connection_manager import ConnectionManager
 import os
 
 router = APIRouter()
-
-# 웹소켓 연결 관리자 인스턴스 생성
-manager = ConnectionManager()
 
 
 @router.get("/welcome")
