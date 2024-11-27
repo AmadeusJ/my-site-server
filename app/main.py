@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models import Base
 from app.database import engine
-from app.routers import portfolio, websocket
+from app.routers import common, websocket, project
 from app.logger import logger
 
 
@@ -32,7 +32,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(portfolio.router, prefix="/api", tags=["portfolio"])
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
+app.include_router(common.router, prefix="/api", tags=["common"])
+app.include_router(project.router, prefix="/api", tags=["project"])
+
 
 logger.info("API Server started successfully.")

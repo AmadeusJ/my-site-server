@@ -1,8 +1,12 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models import Project, ChatMessage
+from app.models import Project, ChatMessage, Statistic
 from app.schemas import ProjectCreate, ChatMessageCreate
 from app.logger import logger
+
+async def get_statistic(db: AsyncSession):
+    statistic = await db.execute(select(Statistic))
+    return statistic.scalars().all()
 
 async def get_projects(db: AsyncSession, category: str):
     if category.lower() == 'all':

@@ -3,6 +3,18 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
 
+class Statistic(BaseModel):
+  """방문자 통계"""
+  id: int
+  name: str
+  yesterday_count: int
+  today_count: int
+  total_count: int
+
+  class Config:
+    orm_mode = True
+
+
 class Project(BaseModel):
   id: int
   category: str
