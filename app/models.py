@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, JSON, Date, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -10,12 +10,18 @@ class Statistic(Base):
   __tablename__ = "statistic_tb"
 
   id = Column(Integer, primary_key=True, index=True)
-  yesterday_count = Column(Integer, nullable=False, default=0)
   today_count = Column(Integer, nullable=False, default=0)
   total_count = Column(Integer, nullable=False, default=0)
   last_updated_at = Column(DateTime, nullable=False)
 
+class Session(Base):
+  """세션"""
+  __tablename__ = "session_tb"
 
+  id = Column(Integer, primary_key=True, index=True)
+  user_id = Column(String, nullable=False, index=True)
+  created_at = Column(DateTime, default=datetime.now(datetime.timezone.utc), nullable=False)
+  last_message_date = Column(DateTime, default=datetime.now(datetime.timezone.utc), nullable=True)
 
 class Project(Base):
   """프로젝트"""
@@ -40,9 +46,10 @@ class ChatMessage(Base):
   __tablename__ = "chat_message_tb"
 
   id = Column(Integer, primary_key=True, index=True)
+  session_id = Column(Integer, nullable=False, index=True, foreign_key=Session.id)
   sender_id = Column(String, nullable=False)
   receiver_id = Column(String, nullable=False)
   content = Column(String, nullable=False)
   is_sent_to_telegram = Column(Boolean, default=False)
-  created_at = Column(DateTime, nullable=False)
+  created_at = Column(DateTime, default=datetime.now(datetime.timezone.utc), nullable=False)
 

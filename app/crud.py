@@ -30,8 +30,9 @@ async def create_project(db: AsyncSession, project: ProjectCreate):
     return db_project
 
 
-async def create_chat_message(db: AsyncSession, chat_message: ChatMessageCreate):
+async def create_chat_message(db: AsyncSession, session_id: int, chat_message: ChatMessageCreate):
     db_chat_message = ChatMessage(**chat_message.model_dump())
+    db_chat_message.session_id = session_id
     db.add(db_chat_message)
     await db.commit()
     await db.refresh(db_chat_message)

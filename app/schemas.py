@@ -6,7 +6,6 @@ from datetime import date, datetime
 class Statistic(BaseModel):
   """방문자 통계"""
   id: int
-  yesterday_count: int
   today_count: int
   total_count: int
   last_updated_at: datetime
@@ -14,6 +13,13 @@ class Statistic(BaseModel):
   class Config:
     orm_mode = True
 
+
+class Session(BaseModel):
+  """세션"""
+  id: int
+  user_id: str
+  created_at: datetime
+  last_message_date: datetime
 
 class Project(BaseModel):
   id: int
