@@ -1,7 +1,13 @@
 # pydantic 스키마 정의
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import date, datetime
+
+# 통일된 응답 모델 정의
+class ResponseModel(BaseModel):
+    status: str
+    data: Optional[Any]
+    message: str
 
 class WelcomeSchema(BaseModel):
   """페이지 진입시 기본 데이터 반환"""
