@@ -2,20 +2,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.crud import get_statistic
-from app.schemas import Statistic
+from app.schemas import WelcomeSchema, StatisticSchema
 from app.logger import logger
 import os
 
 router = APIRouter()
 
 
-@router.get("/welcome")
-async def welcome(db: AsyncSession = Depends(get_db)):
+@router.post("/welcome", response_model=StatisticSchema)
+async def welcome(data: WelcomeSchema, db: AsyncSession = Depends(get_db)):
     """
     페이지 진입시 기본 데이터 반환 / N번째 방문자수 등
     """
-    statistic = await get_statistic(db)
-    return {"statistic": statistic}
+    statistic_dict = await get_statistic(data.user_id, data.isNewVisitor, db)
+    return StatisticSchema(**statistic_dict)
 
 
 @router.get("/status")

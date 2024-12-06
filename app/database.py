@@ -27,11 +27,17 @@ logger.info(f"Connecting to database at {DB_HOST}:{DB_PORT}")
 engine = create_async_engine(DATABASE_URL, echo=True)
 
 # 세션 매퍼 생성
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+AsyncSessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False  # 세션 커밋 이후에도 인스턴스 접근을 유지
+)
 
 # 의존성 주입용 함수
-async def get_db():
+async def get_db() -> AsyncSession:
   logger.info("Database session opened")
-  async with SessionLocal() as session:
-        yield session
+  async with AsyncSessionLocal() as session:
+    yield session
   logger.info("Database session closed")

@@ -19,3 +19,6 @@ docker compose up -d mysql
 docker compose rm mysql
 ```
 
+```bash
+docker compose down -v
+``` 
