@@ -2,7 +2,7 @@ from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import ChatMessage, Statistic, Session
-from app.schemas import ChatMessageCreate, SessionSchema, StatisticSchema
+from app.schemas import ChatMessageCreateSchema, SessionSchema, StatisticSchema
 from app.logger import logger
 from datetime import datetime
 from app.globals import SEOUL_TIMEZONE 
@@ -58,7 +58,7 @@ async def get_statistic(user_id: str, isNewVisitor: bool, db: AsyncSession):
         raise e
 
 
-async def create_chat_message(db: AsyncSession, session_id: int, chat_message: ChatMessageCreate):
+async def create_chat_message(db: AsyncSession, session_id: int, chat_message: ChatMessageCreateSchema):
     db_chat_message = ChatMessage(**chat_message.model_dump())
     db_chat_message.session_id = session_id
     db.add(db_chat_message)
@@ -68,20 +68,20 @@ async def create_chat_message(db: AsyncSession, session_id: int, chat_message: C
     return db_chat_message
 
 
-async def get_chat_messages(db: AsyncSession, user_id: str, other_id: str):
+async def get_chat_messages(db: AsyncSession, user_id: str):
     chat_messages = await db.execute(
         select(ChatMessage).where(
-            (
-                (ChatMessage.sender_id == user_id) & 
-                (ChatMessage.receiver_id == other_id)
-            ) |
-            (
-                (ChatMessage.sender_id == other_id) & 
-                (ChatMessage.receiver_id == user_id)
-            )
+            (ChatMessage.sender_id == user_id) | 
+            (ChatMessage.receiver_id == user_id)
         ).order_by(ChatMessage.created_at.desc())
     )
-    return chat_messages.scalars().all()
+
+    # ORM 객체를 딕셔너리로 변환하여 반환
+    chat_messages_dict = {
+        "user_id": user_id,
+        "messages": chat_messages.scalars().all()
+    }
+    return chat_messages_dict
 
 
 # async def get_projects(db: AsyncSession, category: str):

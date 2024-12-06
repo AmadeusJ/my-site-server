@@ -26,17 +26,17 @@ class SessionSchema(BaseModel):
   last_updated_at: datetime
 
   class Config:
-    orm_mode = True
+    from_attributes = True
 
-class SessionCreate(BaseModel):
+class SessionCreateSchema(BaseModel):
   """세션 생성"""
   user_id: str
 
   class Config:
-    orm_mode = True 
+    from_attributes = True
 
 
-class ChatMessage(BaseModel):
+class ChatMessageSchema(BaseModel):
   """채팅 메시지"""
   id: int
   sender_id: str
@@ -44,10 +44,10 @@ class ChatMessage(BaseModel):
   created_at: datetime
 
   class Config:
-    orm_mode = True
+    from_attributes = True
 
 
-class ChatMessageCreate(BaseModel):
+class ChatMessageCreateSchema(BaseModel):
   """채팅 메시지 생성"""
   sender_id: str
   receiver_id: str
@@ -55,15 +55,19 @@ class ChatMessageCreate(BaseModel):
   created_at: datetime
 
   class Config:
-    orm_mode = True
+    from_attributes = True
 
+class ChatMessageListRequestSchema(BaseModel):
+  """채팅 메시지 목록 요청"""
+  user_id: str
 
-class ChatMessageList(BaseModel):
-  """채팅 메시지 목록"""
-  messages: List[ChatMessage]
+class ChatMessageListSchema(BaseModel):
+    """채팅 메시지 목록"""
+    user_id: str
+    messages: Optional[List[ChatMessageSchema]]
 
-  class Config:
-    orm_mode = True 
+    class Config:
+        from_attributes = True
 
 
 # class Project(BaseModel):
