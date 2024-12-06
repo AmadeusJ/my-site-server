@@ -29,7 +29,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str = Query('default
             logger.info(f"Received message: {data}")
 
             # 메시지 처리 로직 (예: DB 저장, 텔레그램 전송 등)
-            await manager.send_message_to_user(user_id, data)
+            await manager.send_message_to_user(user_id=user_id, message=data)
     except WebSocketDisconnect:
         await manager.disconnect(user_id)
         logger.error(f"WebSocket connection closed: {user_id}")

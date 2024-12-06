@@ -4,6 +4,7 @@ from datetime import datetime
 from app.globals import SEOUL_TIMEZONE
 from app.models import Session
 
+
 async def get_or_create_session(user_id: str, db: AsyncSession):
     """
     세션 조회 및 생성
