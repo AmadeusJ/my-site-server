@@ -36,6 +36,17 @@ class ChatMessage(Base):
   is_sent_to_telegram = Column(Boolean, default=False)
   created_at = Column(DateTime, default=datetime.now(SEOUL_TIMEZONE), nullable=False)
 
+  def to_dict(self):
+    return {
+      "id": self.id,
+      "session_id": self.session_id,
+      "sender_id": self.sender_id,
+      "receiver_id": self.receiver_id,
+      "content": self.content,
+      "is_sent_to_telegram": self.is_sent_to_telegram,
+      "created_at": self.created_at
+    }
+
 
 # class Project(Base):
 #   """프로젝트"""

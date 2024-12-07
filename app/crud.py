@@ -6,6 +6,8 @@ from app.schemas import ChatMessageCreateSchema, SessionSchema, StatisticSchema
 from app.logger import logger
 from datetime import datetime
 from app.globals import SEOUL_TIMEZONE 
+from pydantic import parse_obj_as
+
 
 async def get_statistic(user_id: str, isNewVisitor: bool, db: AsyncSession):
     """
@@ -58,30 +60,45 @@ async def get_statistic(user_id: str, isNewVisitor: bool, db: AsyncSession):
         raise e
 
 
-async def create_chat_message(db: AsyncSession, session_id: int, chat_message: ChatMessageCreateSchema):
+async def create_chat_message(session_id: int, chat_message: dict, is_sent_to_telegram: bool, db: AsyncSession):
+    chat_message = parse_obj_as(ChatMessageCreateSchema, chat_message)
     db_chat_message = ChatMessage(**chat_message.model_dump())
     db_chat_message.session_id = session_id
+    db_chat_message.is_sent_to_telegram = is_sent_to_telegram
     db.add(db_chat_message)
     await db.commit()
     await db.refresh(db_chat_message)
-    logger.info(f"Chat message created for {db_chat_message.sender_id} : {db_chat_message.content}")
-    return db_chat_message
 
-
-async def get_chat_messages(db: AsyncSession, user_id: str):
-    chat_messages = await db.execute(
-        select(ChatMessage).where(
-            (ChatMessage.sender_id == user_id) | 
-            (ChatMessage.receiver_id == user_id)
-        ).order_by(ChatMessage.created_at.desc())
-    )
-
-    # ORM 객체를 딕셔너리로 변환하여 반환
-    chat_messages_dict = {
-        "user_id": user_id,
-        "messages": chat_messages.scalars().all()
+    chat_message_dict = {
+        "id": db_chat_message.id,
+        "sender_id": db_chat_message.sender_id,
+        "content": db_chat_message.content,
+        "created_at": db_chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "is_sent_to_telegram": db_chat_message.is_sent_to_telegram
     }
-    return chat_messages_dict
+    logger.info(f"Chat message created for {db_chat_message.sender_id} : {chat_message_dict}")
+
+    return chat_message_dict
+
+
+async def get_chat_messages(user_id: str, db: AsyncSession):
+    try:
+        chat_messages = await db.execute(
+            select(ChatMessage).where(
+                (ChatMessage.sender_id == user_id) | 
+                (ChatMessage.receiver_id == user_id)
+            ).order_by(ChatMessage.created_at.desc())
+        )
+
+        # ORM 객체를 딕셔너리로 변환하여 반환
+        chat_messages_dict = {
+        "user_id": user_id,
+            "messages": [message.to_dict() for message in chat_messages.scalars().all()]
+        }
+        return chat_messages_dict
+    except SQLAlchemyError as e:
+        logger.error(f"Chat messages CRUD 에러입니다ㅜㅜ...: {e}")
+        raise e
 
 
 # async def get_projects(db: AsyncSession, category: str):

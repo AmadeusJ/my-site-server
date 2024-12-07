@@ -46,8 +46,10 @@ class ChatMessageSchema(BaseModel):
   """채팅 메시지"""
   id: int
   sender_id: str
+  receiver_id: str
   content: str
-  created_at: datetime
+  created_at: str
+  is_sent_to_telegram: bool
 
   class Config:
     from_attributes = True
@@ -58,7 +60,6 @@ class ChatMessageCreateSchema(BaseModel):
   sender_id: str
   receiver_id: str
   content: str
-  created_at: datetime
 
   class Config:
     from_attributes = True

@@ -3,12 +3,30 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models import Base
 from app.database import engine
-from app.routers import common, websocket, chat
+from app.routers import common, websocket, chat, telegram_hook
 from app.logger import logger
+from telegram.ext import ApplicationBuilder
+import os
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # 서버에서 공개할 HTTPS URL
+WEBHOOK_PATH = "/telegram/webhook"
+
+# Telegram 애플리케이션 생성
+telegram_application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+        # Telegram Webhook 설정
+    try:
+        await telegram_application.bot.set_webhook(url=WEBHOOK_URL + WEBHOOK_PATH)
+        logger.info(f"Telegram webhook 설정 완료: {WEBHOOK_URL + WEBHOOK_PATH}")
+    except Exception as e:
+        logger.error(f"Telegram webhook 설정 실패: {str(e)}")
+        # Telegram 설정에 실패해도 API 서버는 실행해야 하므로 예외를 잡고 진행합니다.
+        logger.warning("Telegram Webhook 설정 실패. 계속 진행합니다...")
+
     try:
         # 시작할 때 실행
         async with engine.begin() as conn:
@@ -36,5 +54,7 @@ app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 app.include_router(common.router, prefix="/api", tags=["common"])
 # app.include_router(project.router, prefix="/api", tags=["project"])
 app.include_router(chat.router, prefix="/api", tags=["chat"])
+app.include_router(telegram_hook.router, prefix="/telegram", tags=["telegram_hook"])
+
 
 logger.info("API Server started successfully.")
