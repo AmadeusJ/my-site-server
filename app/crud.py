@@ -65,6 +65,7 @@ async def create_chat_message(session_id: int, chat_message: dict, is_sent_to_te
     db_chat_message = ChatMessage(**chat_message.model_dump())
     db_chat_message.session_id = session_id
     db_chat_message.is_sent_to_telegram = is_sent_to_telegram
+    db_chat_message.created_at = datetime.now(SEOUL_TIMEZONE)
     db.add(db_chat_message)
     await db.commit()
     await db.refresh(db_chat_message)
