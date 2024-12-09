@@ -50,6 +50,7 @@ class ChatMessageSchema(BaseModel):
   content: str
   created_at: str
   is_sent_to_telegram: bool
+  is_system_message: bool
 
   class Config:
     from_attributes = True

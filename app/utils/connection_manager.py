@@ -54,14 +54,19 @@ class ConnectionManager:
             except json.JSONDecodeError:
                 logger.error(f"Invalid JSON message: {message}")
                 return
+            
+            send_result = False
+            is_system_message = chat_message.get("is_system_message")
 
-            # 채팅 메시지 Telegram에 전송
-            send_result = await send_message_to_telegram(session_id=session.id, user_id=user_id, content=json.dumps(chat_message))
-            if not send_result:
-                # TODO: 메세지 전송 실패 시 처리
-                logger.error(f"Failed to send message to Telegram: {json.dumps(chat_message)}")
-            else:
-                logger.info(f"Message sent to Telegram: {json.dumps(chat_message)}")
+            # 시스템 메시지가 아닌 경우에만 Telegram에 전송
+            if not is_system_message:
+                # 채팅 메시지 Telegram에 전송
+                send_result = await send_message_to_telegram(session_id=session.id, user_id=user_id, content=json.dumps(chat_message))
+                if not send_result:
+                    # TODO: 메세지 전송 실패 시 처리
+                    logger.error(f"Failed to send message to Telegram: {json.dumps(chat_message)}")
+                else:
+                    logger.info(f"Message sent to Telegram: {json.dumps(chat_message)}")
 
             # 채팅 메시지 db에 생성
             chat_message = await create_chat_message(

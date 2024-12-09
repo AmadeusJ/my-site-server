@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.crud import get_chat_messages
 from app.schemas import ResponseModel, ChatMessageListRequestSchema, ChatMessageListSchema
+from app.utils.session import get_or_create_session
 
 router = APIRouter()
 

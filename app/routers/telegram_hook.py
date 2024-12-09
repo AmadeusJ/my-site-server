@@ -30,7 +30,7 @@ async def handle_webhook(request: Request):
             await manager.send_message_from_telegram(telegram_message=user_message)
 
             # 봇이 사용자에게 답장 보내기
-            response_message = f"You said: {user_message}"
+            response_message = f"[Hook Log]\nYou said: {user_message}\n[\Hook Log]"
             await application.bot.send_message(chat_id=user_id, text=response_message)
 
         return {"status": "ok"}

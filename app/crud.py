@@ -84,15 +84,15 @@ async def create_chat_message(session_id: int, chat_message: dict, is_sent_to_te
 async def get_chat_messages(user_id: str, db: AsyncSession):
     try:
         chat_messages = await db.execute(
-            select(ChatMessage).where(
-                (ChatMessage.sender_id == user_id) | 
-                (ChatMessage.receiver_id == user_id)
-            ).order_by(ChatMessage.created_at.desc())
+            select(ChatMessage)
+            .join(Session, ChatMessage.session_id == Session.id)
+            .where(Session.user_id == user_id)
+            .order_by(ChatMessage.created_at.asc())
         )
 
         # ORM 객체를 딕셔너리로 변환하여 반환
         chat_messages_dict = {
-        "user_id": user_id,
+            "user_id": user_id,
             "messages": [message.to_dict() for message in chat_messages.scalars().all()]
         }
         return chat_messages_dict
