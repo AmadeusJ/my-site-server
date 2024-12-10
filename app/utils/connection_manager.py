@@ -57,7 +57,7 @@ class ConnectionManager:
             
             send_result = False
             is_system_message = chat_message.get("is_system_message")
-
+            print(f"is_system_message: {is_system_message}")
             # 시스템 메시지가 아닌 경우에만 Telegram에 전송
             if not is_system_message:
                 # 채팅 메시지 Telegram에 전송
@@ -83,11 +83,34 @@ class ConnectionManager:
             else:
                 logger.warning(f"No active connection found for user: {user_id}")   
     
-    async def send_message_to_user_telegram(self, user_id: str, message: dict):
+    async def send_system_message_to_user(self, user_id: str, message: dict):
         """
-        사용자가 보낸 메세지가 db에 저장된 후 Telegram을 통해 메시지를 전송합니다.
+        사용자에게 시스템 메세지를 보냅니다.
         """
-        pass
+        async with get_db() as db:
+            session = await get_or_create_session(user_id=user_id, db=db)
+            
+            send_result = await send_message_to_telegram(session_id=session.id, user_id=user_id, content=json.dumps(message))
+            if not send_result:
+                # TODO: 메세지 전송 실패 시 처리
+                logger.error(f"Failed to send message to Telegram: {json.dumps(message)}")
+            else:
+                logger.info(f"Message sent to Telegram: {json.dumps(message)}")
+
+            chat_message = await create_chat_message(
+                session_id=session.id, 
+                chat_message=message, 
+                is_sent_to_telegram=True, 
+                db=db
+            )
+            chat_message_str = json.dumps(chat_message)
+
+            if user_id in self.user_connections:
+                await self.user_connections[user_id].send_text(chat_message_str)
+                logger.info(f"Message sent to {user_id}: {chat_message}")
+            else:
+                logger.warning(f"No active connection found for user: {user_id}")
+
 
     async def send_message_from_telegram(self, telegram_message: str):
         """
@@ -118,4 +141,3 @@ class ConnectionManager:
                 logger.info(f"Message from Telegram sent to {user_id}: {chat_message}")
             else:
                 logger.warning(f"No active connection found for user: {user_id}")
-

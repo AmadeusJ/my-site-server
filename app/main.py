@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models import Base
 from app.database import engine
-from app.routers import common, websocket, chat, telegram_hook
+from app.routers import common, websocket, chat, telegram_hook, email
 from app.logger import logger
 from telegram.ext import ApplicationBuilder
 import os
@@ -55,6 +55,6 @@ app.include_router(common.router, prefix="/api", tags=["common"])
 # app.include_router(project.router, prefix="/api", tags=["project"])
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(telegram_hook.router, prefix="/telegram", tags=["telegram_hook"])
-
+app.include_router(email.router, prefix="/api", tags=["email"])
 
 logger.info("API Server started successfully.")

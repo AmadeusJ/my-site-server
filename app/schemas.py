@@ -77,6 +77,11 @@ class ChatMessageListSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class EmailSchema(BaseModel):
+  """이메일"""
+  user_id: str
+  email: str
+  message: str
 
 # class Project(BaseModel):
 #   id: int
