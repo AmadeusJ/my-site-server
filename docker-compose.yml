@@ -15,13 +15,13 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
     container_name: backend
     restart: always
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./:/app
     depends_on:
       - mysql
     environment:
