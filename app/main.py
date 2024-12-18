@@ -61,14 +61,7 @@ if environment == "production":
         TrustedHostMiddleware,
         allowed_hosts=["dawoonjung.com", "www.dawoonjung.com", "*.dawoonjung.com"],
     )
-    app.add_middleware(
-        ProxyFix,
-        x_for=1,
-        x_proto=1,
-        x_host=1,
-        x_prefix=1,
-    )
-
+    
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 app.include_router(common.router, prefix="/api", tags=["common"])
 # app.include_router(project.router, prefix="/api", tags=["project"])
