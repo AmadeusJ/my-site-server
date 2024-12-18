@@ -53,15 +53,15 @@ app.add_middleware(
 )
 
 # Docker Compose에서 전달된 ENVIRONMENT 환경 변수 읽기 (기본값: development)
-environment = os.getenv("ENVIRONMENT", "development")
+# environment = os.getenv("ENVIRONMENT", "development")
 
 # Production 환경에서만 미들웨어 추가
-if environment == "production":
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=["dawoonjung.com", "www.dawoonjung.com", "*.dawoonjung.com"],
-    )
-    
+# if environment == "production":
+#     app.add_middleware(
+#         TrustedHostMiddleware,
+#         allowed_hosts=["dawoonjung.com", "www.dawoonjung.com", "*.dawoonjung.com"],
+#     )
+
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 app.include_router(common.router, prefix="/api", tags=["common"])
 # app.include_router(project.router, prefix="/api", tags=["project"])
