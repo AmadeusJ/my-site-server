@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from werkzeug.middleware.proxy_fix import ProxyFix
 from app.models import Base
 from app.database import engine
 from app.routers import common, websocket, chat, telegram_hook, email
@@ -49,6 +51,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Docker Compose에서 전달된 ENVIRONMENT 환경 변수 읽기 (기본값: development)
+environment = os.getenv("ENVIRONMENT", "development")
+
+# Production 환경에서만 미들웨어 추가
+if environment == "production":
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=["dawoonjung.com", "www.dawoonjung.com", "*.dawoonjung.com"],
+    )
+    app.add_middleware(
+        ProxyFix,
+        x_for=1,
+        x_proto=1,
+        x_host=1,
+        x_prefix=1,
+    )
 
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 app.include_router(common.router, prefix="/api", tags=["common"])

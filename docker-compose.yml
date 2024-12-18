@@ -32,6 +32,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_DRIVER: ${DB_DRIVER}
       POETRY_VIRTUALENVS_CREATE: "false"  # Poetry의 가상환경 비활성화
+      ENVIRONMENT: production
     env_file:
       - .env
 
